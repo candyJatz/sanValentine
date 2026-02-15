@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Andev Web</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #000;
+            flex-direction: column;
+            gap: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Fondo Espacial */
+        .space-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            z-index: -2;
+        }
+
+        /* Estrellas */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle linear infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Planetas/Nebulosas */
+        .planet {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(1px);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .planet-1 {
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle at 30% 30%, #4a90e2, #1e3a8a);
+            top: 10%;
+            left: 10%;
+            opacity: 0.3;
+        }
+
+        .planet-2 {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle at 30% 30%, #f59e0b, #dc2626);
+            bottom: 15%;
+            right: 15%;
+            opacity: 0.3;
+            animation-delay: -10s;
+        }
+
+        .nebula {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(138, 43, 226, 0.3) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            filter: blur(60px);
+            z-index: -1;
+        }
+
+        /* Loading Container */
+        .loading-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 500px;
+            z-index: 10;
+        }
+
+        .loading-container.active {
+            display: flex;
+        }
+
+        .minecraft-message {
+            font-family: 'Press Start 2P', cursive;
+            color: #fff;
+            font-size: 12px;
+            text-align: center;
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.8);
+            min-height: 50px;
+            line-height: 1.5;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 30px;
+            background: #333;
+            border: 4px solid #000;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg,
+                #4caf50 0%,
+                #66bb6a 25%,
+                #4caf50 50%,
+                #66bb6a 75%,
+                #4caf50 100%);
+            background-size: 40px 100%;
+            animation: progressAnimation 20s linear forwards, shimmer 1s linear infinite;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+
+        @keyframes progressAnimation {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0 0; }
+            100% { background-position: 40px 0; }
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Press Start 2P', cursive;
+            color: #fff;
+            font-size: 12px;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.8);
+            z-index: 10;
+        }
+
+        /* Rose Container */
+        .rose-container {
+            display: none;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 100;
+        }
+
+        .rose-container.active {
+            display: block;
+            animation: scaleIn 1s ease-out forwards;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .glass {
+            height: 350px;
+            width: 200px;
+            background: #122139;
+            border-radius: 300px 300px 0px 0px;
+        }
+
+        .glass:before {
+            content: "";
+            height: 10px;
+            width: 10px;
+            transform-origin: center;
+            border: 10px solid #122139;
+            border-radius: 100%;
+            position: absolute;
+            left: 87px;
+            top: -25px;
+        }
+
+        .glass:after {
+            content: "";
+            position: absolute;
+            height: 15px;
+            width: 250px;
+            background: #DC143C;
+            top: 100%;
+            left: -13%;
+        }
+
+        .shine {
+            width: 12px;
+            height: 140px;
+            background: white;
+            opacity: 0.2;
+            position: absolute;
+            left: 85%;
+            top: 80px;
+            border-radius: 100px;
+            z-index: 10;
+        }
+
+        .shine:before {
+            content: "";
+            width: 12px;
+            height: 20px;
+            position: absolute;
+            background: white;
+            top: 160px;
+            border-radius: 100px;
+        }
+
+        .petals > div {
+            position: absolute;
+            background: #FF1493;
+            width: 45px;
+            height: 80px;
+            top: 55px;
+            transition: all 0.5s ease-out;
+        }
+
+        .petals > div:nth-child(1) {
+            border-radius: 15px;
+            box-shadow: 0px 0px 30px rgba(245, 148, 184, 1);
+            left: 80px;
+            top: 60px;
+            background: #FF1493;
+        }
+
+        .petals > div:nth-child(2),
+        .petals > div:nth-child(4),
+        .petals > div:nth-child(6) {
+            background: #b81b43;
+            left: 60px;
+            border-radius: 0px 30px 0px 30px;
+            transform-origin: bottom right;
+        }
+
+        .petals > div:nth-child(3),
+        .petals > div:nth-child(5),
+        .petals > div:nth-child(7) {
+            background: #b81b43;
+            left: 100px;
+            border-radius: 30px 0px 30px 0px;
+            transform-origin: bottom left;
+        }
+
+        .petals > div:nth-child(2) {
+            z-index: 5;
+            background: #a1183d;
+            top: 75px;
+            height: 70px;
+            box-shadow: 0px 0px 50px rgba(245, 148, 184, .5);
+            animation: bloom2 3s ease-in-out forwards;
+        }
+
+        .petals > div:nth-child(3) {
+            z-index: 4;
+            background: #a1183d;
+            top: 75px;
+            height: 70px;
+            box-shadow: 0px 0px 50px rgba(245, 148, 184, .5);
+            animation: bloom3 3s ease-in-out forwards, glowing 2.5s ease-in-out infinite;
+        }
+
+        .petals > div:nth-child(4) {
+            z-index: 3;
+            background: #b81b43;
+            top: 70px;
+            height: 75px;
+            box-shadow: 0px 0px 50px rgba(245, 148, 184, .5);
+            animation: bloom4 3s ease-in-out forwards, glowing 2.5s ease-in-out infinite;
+        }
+
+        .petals > div:nth-child(5) {
+            z-index: 2;
+            background: #b81b43;
+            top: 70px;
+            height: 75px;
+            box-shadow: 0px 0px 50px rgba(245, 148, 184, .5);
+            animation: bloom5 3s ease-in-out forwards, glowing 2.5s ease-in-out infinite;
+        }
+
+        .petals > div:nth-child(6) {
+            z-index: 1;
+            background: #c9204b;
+            top: 65px;
+            height: 70px;
+            box-shadow: 0px 0px 50px rgba(245, 148, 184, .3);
+            animation: bloom6 3s ease-in-out forwards, glowing 2.5s ease-in-out infinite;
+        }
+
+        .petals > div:nth-child(7) {
+            z-index: 0;
+            background: #c9204b;
+            top: 65px;
+            height: 70px;
+            box-shadow: 0px 0px 50px rgba(245, 148, 184, .3);
+            animation: bloom7 3s ease-in-out forwards, glowing 2.5s ease-in-out infinite;
+        }
+
+        .deadPetals > div {
+            position: absolute;
+            background: #FF1493;
+            width: 20px;
+            height: 15px;
+            top: 120px;
+            border-radius: 0px 30px 0px 30px;
+            box-shadow: 0px 0px 30px rgba(245, 148, 184, .5);
+            transition: all 0.5s ease-out;
+        }
+
+        .deadPetals > div:nth-child(1) {
+            left: 95px;
+            transform: rotate(-30deg);
+            animation: falling 20s 4s ease-in-out infinite;
+        }
+
+        .deadPetals > div:nth-child(2) {
+            left: 110px;
+            transform: rotate(-30deg);
+            animation: falling 20s 8s ease-in-out infinite;
+        }
+
+        .deadPetals > div:nth-child(3) {
+            left: 75px;
+            transform: rotate(-30deg);
+            animation: falling 20s 12s ease-in-out infinite;
+        }
+
+        .deadPetals > div:nth-child(4) {
+            left: 88px;
+            transform: rotate(-30deg);
+            animation: falling 20s 16s ease-in-out infinite;
+        }
+
+        .leaves > div:nth-last-child(1) {
+            position: absolute;
+            width: 55px;
+            height: 30px;
+            background: #7CFC00;
+            top: 120px;
+            left: 75px;
+            border-radius: 100px;
+        }
+
+        .leaves > div:nth-child(1) {
+            position: absolute;
+            width: 6px;
+            height: 210px;
+            background: #006300;
+            top: 95px;
+            left: 100px;
+            border-radius: 0 0 100px 100px;
+        }
+
+        .leaves > div:nth-child(2) {
+            position: absolute;
+            width: 30px;
+            height: 50px;
+            top: 53px;
+            border-radius: 5px 40px 20px 40px;
+            background: #006300;
+            transform-origin: bottom;
+            transform: rotate(-30deg);
+            top: 180px;
+            left: 80px;
+            box-shadow: inset 5px 5px #007300;
+        }
+
+        .leaves > div:nth-child(3) {
+            position: absolute;
+            width: 30px;
+            height: 50px;
+            top: 53px;
+            border-radius: 40px 5px 40px 20px;
+            background: #006300;
+            transform-origin: bottom;
+            transform: rotate(30deg);
+            top: 150px;
+            left: 95px;
+            box-shadow: inset -5px 5px #007300;
+        }
+
+        .thorns > div {
+            position: absolute;
+            width: 0;
+            height: 0;
+            top: 140px;
+        }
+
+        .thorns > div:nth-child(odd) {
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 5px solid #006300;
+            left: 105px;
+        }
+
+        .thorns > div:nth-child(even) {
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-right: 5px solid #006300;
+            left: 95px;
+        }
+
+        .thorns > div:nth-child(1) {
+            top: 200px;
+        }
+
+        .thorns > div:nth-child(2) {
+            top: 170px;
+        }
+
+        .thorns > div:nth-child(4) {
+            top: 230px;
+        }
+
+        @keyframes bloom2 {
+            50% {
+                transform: rotate(-90deg);
+                top: 200px;
+                left: 100px;
+            }
+            100% {
+                transform: rotate(-60deg);
+                top: 252px;
+                left: 50px;
+                background: #6b0e26;
+                box-shadow: 0px 0px 0px rgba(245, 148, 184, 0);
+            }
+        }
+
+        @keyframes bloom3 {
+            100% {
+                transform: rotate(45deg);
+            }
+        }
+
+        @keyframes bloom4 {
+            100% {
+                transform: rotate(-20deg);
+            }
+        }
+
+        @keyframes bloom5 {
+            100% {
+                transform: rotate(20deg);
+            }
+        }
+
+        @keyframes bloom6 {
+            100% {
+                transform: rotate(-5deg);
+            }
+        }
+
+        @keyframes bloom7 {
+            100% {
+                transform: rotate(5deg);
+            }
+        }
+
+        @keyframes glowing {
+            50% {
+                background: #FF1996;
+                box-shadow: 0px 0px 60px rgba(245, 148, 184, 1);
+            }
+        }
+
+        @keyframes falling {
+            20% {
+                top: 335px;
+                background: #991336;
+                box-shadow: 0px 0px 0px rgba(245, 148, 184, 0);
+            }
+            100% {
+                top: 335px;
+                opacity: 0;
+            }
+        }
+
+        .love-message {
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Press Start 2P', cursive;
+            color: #FF1493;
+            font-size: 14px;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(255, 20, 147, 0.8),
+                         0 0 20px rgba(255, 20, 147, 0.6),
+                         0 0 30px rgba(255, 20, 147, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+            white-space: nowrap;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: translateX(-50%) scale(1.05);
+            }
+        }
+
+        /* Mensaje con efecto de máquina de escribir */
+        .typewriter-message {
+            position: absolute;
+            bottom: -120px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Press Start 2P', cursive;
+            color: #fff;
+            font-size: 11px;
+            text-align: center;
+            max-width: 500px;
+            line-height: 1.8;
+            opacity: 0;
+        }
+
+        .typewriter-message.active {
+            animation: fadeInMessage 1s ease-out 2s forwards;
+        }
+
+        @keyframes fadeInMessage {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .typewriter-message .text {
+            display: inline-block;
+            overflow: hidden;
+            border-right: 3px solid #FF1493;
+            white-space: nowrap;
+            animation: typing 4s steps(60) 3s forwards,
+                       blink-caret 0.75s step-end infinite;
+            text-shadow: 0 0 10px rgba(255, 20, 147, 0.5),
+                         0 0 20px rgba(255, 20, 147, 0.3),
+                         0 0 30px rgba(255, 20, 147, 0.2);
+            max-width: 0;
+        }
+
+        @keyframes typing {
+            from {
+                max-width: 0;
+            }
+            to {
+                max-width: 100%;
+            }
+        }
+
+        @keyframes blink-caret {
+            from, to {
+                border-color: transparent;
+            }
+            50% {
+                border-color: #FF1493;
+            }
+        }
+
+        .typewriter-message .text.finished {
+            border-right: none;
+            animation: none;
+        }
+
+        @media (max-width: 600px) {
+            .loading-container {
+                width: 90%;
+            }
+            .minecraft-message {
+                font-size: 10px;
+            }
+            .rose-container {
+                transform: translate(-50%, -50%) scale(0.7);
+            }
+            .rose-container.active {
+                animation: scaleInMobile 1s ease-out forwards;
+            }
+            @keyframes scaleInMobile {
+                from {
+                    transform: translate(-50%, -50%) scale(0);
+                }
+                to {
+                    transform: translate(-50%, -50%) scale(0.7);
+                }
+            }
+            .love-message {
+                font-size: 10px;
+                top: -60px;
+            }
+            .typewriter-message {
+                font-size: 8px;
+                max-width: 90%;
+                bottom: -100px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Fondo Espacial -->
+    <div class="space-background"></div>
+    <div class="nebula"></div>
+    <div class="planet planet-1"></div>
+    <div class="planet planet-2"></div>
+    <div class="stars" id="stars"></div>
+
+    <!-- Loading Container -->
+    <div class="loading-container" id="loadingContainer">
+        <div class="minecraft-message" id="message">Initializing world...</div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+            <div class="progress-text" id="progressText">0%</div>
+        </div>
+    </div>
+
+    <!-- Rose Container -->
+    <div class="rose-container" id="roseContainer">
+        <div class="love-message">Para Ti ♥</div>
+        <div class="glass">
+            <div class="shine"></div>
+            <div class="thorns">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <div class="leaves">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <div class="petals">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <div class="deadPetals">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+        <!-- Mensaje con efecto de máquina de escribir -->
+        <div class="typewriter-message" id="typewriterMessage">
+            <span class="text" id="typewriterText"></span>
+        </div>
+    </div>
+
+    <script>
+        // Crear estrellas
+        const starsContainer = document.getElementById('stars');
+        const numberOfStars = 200;
+
+        for (let i = 0; i < numberOfStars; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+
+            const size = Math.random() * 3;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+
+            star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            star.style.animationDelay = Math.random() * 3 + 's';
+
+            starsContainer.appendChild(star);
+        }
+
+        // Sistema de carga
+        const messages = [
+            "Initializing world...",
+            "Contigo no me importa perder el mapa...",
+            "Colocando bloques con cariño…",
+            "Contigo, hasta el mundo en survival se siente en creativo...",
+            "Mundo listo para compartir."
+        ];
+
+        let currentMessageIndex = 0;
+        let messageInterval;
+        let progressInterval;
+        let progressValue = 0;
+
+        const loadingContainer = document.getElementById('loadingContainer');
+        const messageElement = document.getElementById('message');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const roseContainer = document.getElementById('roseContainer');
+        const typewriterMessage = document.getElementById('typewriterMessage');
+        const typewriterText = document.getElementById('typewriterText');
+
+        // Mensaje para el efecto de máquina de escribir
+const finalMessage = " Mientras conserve un solo pétalo,mi amor por ti seguirá intacto ♥";
+
+
+        typewriterMessage.style.maxWidth = '200vw';
+
+
+
+
+        window.addEventListener('load', startLoading);
+
+        function startLoading() {
+            loadingContainer.classList.add('active');
+
+            messageInterval = setInterval(() => {
+                currentMessageIndex++;
+                if (currentMessageIndex < messages.length) {
+                    messageElement.textContent = messages[currentMessageIndex];
+                    messageElement.style.animation = 'none';
+                    setTimeout(() => {
+                        messageElement.style.animation = '';
+                    }, 10);
+                }
+            }, 4000);
+
+            progressInterval = setInterval(() => {
+                progressValue += 1;
+                progressText.textContent = progressValue + '%';
+
+                if (progressValue >= 100) {
+                    clearInterval(progressInterval);
+                    clearInterval(messageInterval);
+                    messageElement.textContent = "Complete!";
+
+                    setTimeout(() => {
+                        loadingContainer.style.display = 'none';
+                        roseContainer.classList.add('active');
+                        typewriterMessage.classList.add('active');
+                        startTypewriter();
+                    }, 1000);
+                }
+            }, 200);
+        }
+
+        function startTypewriter() {
+            let i = 0;
+            typewriterText.textContent = '';
+
+            function typeChar() {
+                if (i < finalMessage.length) {
+                    typewriterText.textContent += finalMessage.charAt(i);
+                    i++;
+                    setTimeout(typeChar, 100);
+                } else {
+                    // Cuando termina de escribir, remover el cursor parpadeante
+                    setTimeout(() => {
+                        typewriterText.classList.add('finished');
+                    }, 1000);
+                }
+            }
+
+            setTimeout(typeChar, 3000);
+        }
+    </script>
+</body>
+</html>
