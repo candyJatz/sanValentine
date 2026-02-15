@@ -294,8 +294,9 @@
                 </a>
                 <ul class="nav-links">
                     <li><a href="#hero">home</a></li>
-                    <li><a href="#pag2.html">rosa</a></li>
-                    <li><a href="#pag3.html">universo</a></li>
+                    <li><a href="pag2.htm">rosa</a></li>
+                    <li><a href="pag3.html">universo</a></li>
+                    <li><a href="pag4.html">oscuridad</a></li>
 
                 </ul>
             </nav>
@@ -442,7 +443,7 @@
 
                     if (distance < connectionDistance) {
                         ctx.beginPath();
-                        let opacity = 1 - (distance / connectionDistance);
+                        let opacity = 1 - (distance / connecStionDistance);
                         ctx.strokeStyle = 'rgba(100, 100, 255,' + (opacity * 0.2) + ')';
                         ctx.lineWidth = 1;
                         ctx.moveTo(particles[i].x, particles[i].y);
